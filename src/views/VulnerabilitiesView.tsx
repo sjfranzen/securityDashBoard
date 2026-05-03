@@ -3,8 +3,13 @@ import { APPS, VULNS, SEV_STYLES } from "../data";
 import type { Severity } from "../data";
 import { teamById } from "../data";
 import { SectionLabel } from "../components/SectionLabel";
+import type { DrillDown } from "../components/DrillDownDrawer";
 
-export function VulnerabilitiesView() {
+interface Props {
+  onDrillDown: (d: DrillDown) => void;
+}
+
+export function VulnerabilitiesView({ onDrillDown }: Props) {
   const [sortBy, setSortBy] = useState<Severity>("critical");
 
   const sorted = [...APPS]
@@ -71,6 +76,7 @@ export function VulnerabilitiesView() {
           return (
             <div
               key={row.id}
+              onClick={() => onDrillDown({ type: "app-detail", appId: row.id })}
               style={{
                 display: "grid",
                 gridTemplateColumns: "2fr 1.3fr 60px 60px 60px 60px 1fr",
@@ -79,7 +85,11 @@ export function VulnerabilitiesView() {
                 alignItems: "center",
                 borderTop: i === 0 ? "none" : "1px solid var(--border)",
                 fontSize: 14,
+                cursor: "pointer",
+                transition: "background 120ms",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-2)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
               <div style={{ color: "var(--ink-0)", fontWeight: 500 }}>{row.name}</div>
               <div style={{ color: "var(--ink-2)", fontSize: 13 }}>{row.team.name}</div>

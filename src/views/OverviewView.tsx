@@ -16,12 +16,14 @@ import { TEAMS, APPS, VULNS, ISSUES, MAPS, TREND_30D, SEV_STYLES } from "../data
 import { RagPill } from "../components/RagPill";
 import { StatCard } from "../components/StatCard";
 import { SectionLabel } from "../components/SectionLabel";
+import type { DrillDown } from "../components/DrillDownDrawer";
 
 interface Props {
   onNavigate: (view: string, focusId?: string) => void;
+  onDrillDown: (d: DrillDown) => void;
 }
 
-export function OverviewView({ onNavigate }: Props) {
+export function OverviewView({ onNavigate, onDrillDown }: Props) {
   const totals = useMemo(() => {
     return VULNS.reduce(
       (acc, v) => {
@@ -101,7 +103,12 @@ export function OverviewView({ onNavigate }: Props) {
               color: "var(--ink-0)",
             }}
           >
-            <span style={{ color: "var(--rag-red)" }}>{totals.critical + totals.high}</span>{" "}
+            <span
+              onClick={() => onDrillDown({ type: "vulns-severity", severity: "critical" })}
+              style={{ color: "var(--rag-red)", cursor: "pointer", borderBottom: "1px dashed var(--rag-red)" }}
+            >
+              {totals.critical + totals.high}
+            </span>{" "}
             high-priority findings
             <br />
             across <span style={{ color: "var(--ink-1)" }}>{TEAMS.length} teams</span> and{" "}
@@ -128,12 +135,14 @@ export function OverviewView({ onNavigate }: Props) {
             value={issueStats.total}
             sub={`${issueStats.r} red · ${issueStats.a} amber · ${issueStats.g} green`}
             accent="var(--rag-amber)"
+            onClick={() => onDrillDown({ type: "issues-by-rag" })}
           />
           <StatCard
             label="Active MAPs"
             value={mapStats.total}
             sub={`${mapStats.r} at risk · ${mapStats.g} on track`}
             accent="var(--rag-green)"
+            onClick={() => onDrillDown({ type: "maps-by-team" })}
           />
         </div>
       </div>
@@ -142,10 +151,10 @@ export function OverviewView({ onNavigate }: Props) {
       <div>
         <SectionLabel>Vulnerability inventory</SectionLabel>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, marginTop: 16 }}>
-          <StatCard label="Critical" value={totals.critical} trend={-12} accent={SEV_STYLES.critical.color} sub="across 9 applications" />
-          <StatCard label="High" value={totals.high} trend={-8} accent={SEV_STYLES.high.color} sub="across 12 applications" />
-          <StatCard label="Medium" value={totals.medium} trend={-3} accent={SEV_STYLES.medium.color} sub="rolling backlog" />
-          <StatCard label="Low" value={totals.low} trend={1} accent={SEV_STYLES.low.color} sub="advisory tier" />
+          <StatCard label="Critical" value={totals.critical} trend={-12} accent={SEV_STYLES.critical.color} sub="across 9 applications" onClick={() => onDrillDown({ type: "vulns-severity", severity: "critical" })} />
+          <StatCard label="High" value={totals.high} trend={-8} accent={SEV_STYLES.high.color} sub="across 12 applications" onClick={() => onDrillDown({ type: "vulns-severity", severity: "high" })} />
+          <StatCard label="Medium" value={totals.medium} trend={-3} accent={SEV_STYLES.medium.color} sub="rolling backlog" onClick={() => onDrillDown({ type: "vulns-severity", severity: "medium" })} />
+          <StatCard label="Low" value={totals.low} trend={1} accent={SEV_STYLES.low.color} sub="advisory tier" onClick={() => onDrillDown({ type: "vulns-severity", severity: "low" })} />
         </div>
       </div>
 

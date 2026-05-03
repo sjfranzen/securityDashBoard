@@ -5,6 +5,8 @@ import { TeamsView } from "./views/TeamsView";
 import { VulnerabilitiesView } from "./views/VulnerabilitiesView";
 import { IssuesView } from "./views/IssuesView";
 import { MapsView } from "./views/MapsView";
+import { DrillDownDrawer } from "./components/DrillDownDrawer";
+import type { DrillDown } from "./components/DrillDownDrawer";
 
 type ViewId = "overview" | "teams" | "vulns" | "issues" | "maps";
 
@@ -19,6 +21,7 @@ const NAV_ITEMS: { id: ViewId; label: string; icon: React.ElementType }[] = [
 export default function App() {
   const [view, setView] = useState<ViewId>("overview");
   const [focusIssue, setFocusIssue] = useState<string | null>(null);
+  const [drillDown, setDrillDown] = useState<DrillDown | null>(null);
 
   const handleNavigate = (v: string, focus?: string) => {
     setView(v as ViewId);
@@ -133,12 +136,14 @@ export default function App() {
       </header>
 
       <main style={{ maxWidth: 1440, margin: "0 auto", padding: "36px 36px 80px" }}>
-        {view === "overview" && <OverviewView onNavigate={handleNavigate} />}
-        {view === "teams" && <TeamsView />}
-        {view === "vulns" && <VulnerabilitiesView />}
+        {view === "overview" && <OverviewView onNavigate={handleNavigate} onDrillDown={setDrillDown} />}
+        {view === "teams" && <TeamsView onDrillDown={setDrillDown} />}
+        {view === "vulns" && <VulnerabilitiesView onDrillDown={setDrillDown} />}
         {view === "issues" && <IssuesView focusId={focusIssue} onClearFocus={() => setFocusIssue(null)} />}
-        {view === "maps" && <MapsView />}
+        {view === "maps" && <MapsView onDrillDown={setDrillDown} />}
       </main>
+
+      <DrillDownDrawer drillDown={drillDown} onClose={() => setDrillDown(null)} />
 
       <footer
         style={{

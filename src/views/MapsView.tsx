@@ -2,8 +2,13 @@ import { TEAMS, MAPS, RAG_STYLES, teamById } from "../data";
 import { RagPill } from "../components/RagPill";
 import { SectionLabel } from "../components/SectionLabel";
 import { ProgressBar } from "../components/ProgressBar";
+import type { DrillDown } from "../components/DrillDownDrawer";
 
-export function MapsView() {
+interface Props {
+  onDrillDown: (d: DrillDown) => void;
+}
+
+export function MapsView({ onDrillDown }: Props) {
   const matrix = TEAMS.map((owner) => ({
     owner,
     cells: TEAMS.map((other) => {
@@ -106,6 +111,7 @@ export function MapsView() {
           {MAPS.map((m, i) => (
             <div
               key={m.id}
+              onClick={() => onDrillDown({ type: "map-detail", mapId: m.id })}
               style={{
                 display: "grid",
                 gridTemplateColumns: "120px 2.5fr 1.2fr 1.5fr 100px 90px 100px",
@@ -114,7 +120,11 @@ export function MapsView() {
                 alignItems: "center",
                 borderTop: i === 0 ? "none" : "1px solid var(--border)",
                 fontSize: 13,
+                cursor: "pointer",
+                transition: "background 120ms",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-2)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
               <div style={{ fontFamily: "var(--font-mono)", color: "var(--ink-2)", fontSize: 11 }}>{m.id}</div>
               <div style={{ color: "var(--ink-0)" }}>{m.title}</div>

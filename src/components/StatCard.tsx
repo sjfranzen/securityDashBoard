@@ -6,18 +6,24 @@ interface StatCardProps {
   sub?: string;
   trend?: number;
   accent?: string;
+  onClick?: () => void;
 }
 
-export function StatCard({ label, value, sub, trend, accent }: StatCardProps) {
+export function StatCard({ label, value, sub, trend, accent, onClick }: StatCardProps) {
   return (
     <div
+      onClick={onClick}
       style={{
         background: "var(--surface-1)",
         border: "1px solid var(--border)",
         padding: "20px 22px",
         position: "relative",
         overflow: "hidden",
+        cursor: onClick ? "pointer" : "default",
+        transition: "background 120ms",
       }}
+      onMouseEnter={(e) => { if (onClick) e.currentTarget.style.background = "var(--surface-2)"; }}
+      onMouseLeave={(e) => { if (onClick) e.currentTarget.style.background = "var(--surface-1)"; }}
     >
       <div
         style={{

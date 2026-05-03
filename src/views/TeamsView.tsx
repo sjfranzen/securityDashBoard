@@ -2,8 +2,13 @@ import { TEAMS, APPS, VULNS, ISSUES, MAPS, RAG_STYLES, SEV_STYLES } from "../dat
 import type { Rag } from "../data";
 import { RagPill } from "../components/RagPill";
 import { SectionLabel } from "../components/SectionLabel";
+import type { DrillDown } from "../components/DrillDownDrawer";
 
-export function TeamsView() {
+interface Props {
+  onDrillDown: (d: DrillDown) => void;
+}
+
+export function TeamsView({ onDrillDown }: Props) {
   const teamData = TEAMS.map((t) => {
     const apps = APPS.filter((a) => a.teamId === t.id);
     const totals = apps.reduce(
@@ -36,12 +41,17 @@ export function TeamsView() {
         {teamData.map((td) => (
           <div
             key={td.team.id}
+            onClick={() => onDrillDown({ type: "team-detail", teamId: td.team.id })}
             style={{
               background: "var(--surface-1)",
               border: "1px solid var(--border)",
               borderLeft: `3px solid ${RAG_STYLES[td.rag].color}`,
               padding: "24px 26px",
+              cursor: "pointer",
+              transition: "background 120ms",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-2)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--surface-1)")}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
